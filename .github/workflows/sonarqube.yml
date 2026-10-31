@@ -1,0 +1,31 @@
+
+name: Pruebas y calidad del software
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  pruebas:
+    name: Ejecutar pruebas unitarias
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Instalar Poetry
+        run: pipx install poetry
+
+      - name: Instalar dependencias
+        run: poetry install --no-interaction --no-root
+
+      - name: Ejecutar pruebas con Pytest
+        run: poetry run python -m pytest -v
