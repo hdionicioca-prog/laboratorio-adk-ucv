@@ -1,23 +1,25 @@
 
-name: Pruebas y calidad del software
+name: Pruebas y analisis de calidad
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 jobs:
-  pruebas:
-    name: Ejecutar pruebas unitarias
+  calidad:
+    name: Pruebas y SonarQube
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar codigo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.14'
 
@@ -27,5 +29,10 @@ jobs:
       - name: Instalar dependencias
         run: poetry install --no-interaction --no-root
 
-      - name: Ejecutar pruebas con Pytest
+      - name: Ejecutar pruebas unitarias
         run: poetry run python -m pytest -v
+
+      - name: Analizar codigo con SonarQube Cloud
+        uses: SonarSource/sonarqube-scan-action@v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
